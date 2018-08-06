@@ -43,6 +43,8 @@ testing <- casas[-intrain,]
                        #savePredictions = TRUE)
 
 
+#Modelo 1
+
 set.seed(1)
 modelo1 <- lm(price ~ bedrooms + bathrooms + sqft_living + sqft_lot + waterfront + view + condition + grade + 
                 sqft_above + yr_built + sqft_living15 + sqft_lot15, data=training)
@@ -52,8 +54,15 @@ predicciones <- predict(modelo1, testing)
 
 #Error de predicción del modelo. Al tratarse de una variable continua se emplea como medida 
 #de error el MSE (mean square error).
+mean((casas$price[-intrain] - predicciones)^2)
 
+#Modelo 2 
+
+set.seed(1)
 modelo2 <- glm(price ~ bedrooms + bathrooms + sqft_living + sqft_lot + waterfront + view + condition + grade + 
-                 sqft_above + yr_built + sqft_living15 + sqft_lot15, data=casa)
+                 sqft_above + yr_built + sqft_living15 + sqft_lot15, data=training)
+summary(modelo2)
 
-summary(modelo1)
+predicciones2 <- predict(modelo2, testing)
+
+mean((casas$price[-intrain] - predicciones2)^2)
