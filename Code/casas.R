@@ -25,21 +25,34 @@ table(casas$floors) #conteo de cuantas casas tienen esa cantidad de pisos
 
 # Modelando prediccion
 
-set.seed(30334)
+
+install.packages("caret")
+
+library(caret)
+
+
+set.seed(1)
 intrain <- createDataPartition(y = casas$price, p= 0.6, list = FALSE)
 training <- casas[intrain,]
 testing <- casas[-intrain,]
 
-trctrl <- trainControl(method = "repeatedcv", number = 10,
-                       repeats = 3,
-                       classProbs = TRUE,
-                       summaryFunction = twoClassSummary,
-                       savePredictions = TRUE)
+#trctrl <- trainControl(method = "repeatedcv", number = 10,
+                     #  repeats = 3,
+                      # classProbs = TRUE,
+                       #summaryFunction = twoClassSummary,
+                       #savePredictions = TRUE)
 
 
-set.seed(30334)
+set.seed(1)
 modelo1 <- lm(price ~ bedrooms + bathrooms + sqft_living + sqft_lot + waterfront + view + condition + grade + 
-                sqft_above + yr_built + sqft_living15 + sqft_lot15, data=casas)
+                sqft_above + yr_built + sqft_living15 + sqft_lot15, data=training)
+summary(modelo1)
+
+predicciones <- predict(modelo1, testing)
+
+#Error de predicción del modelo. Al tratarse de una variable continua se emplea como medida 
+#de error el MSE (mean square error).
+
 modelo2 <- glm(price ~ bedrooms + bathrooms + sqft_living + sqft_lot + waterfront + view + condition + grade + 
                  sqft_above + yr_built + sqft_living15 + sqft_lot15, data=casa)
 
