@@ -40,25 +40,26 @@ dataset_aneurisma <- read_delim("Data/dataset_aneurisma.csv",
  #Train control para la prediccion
  
  control_train <- trainControl(method = "repeatedcv", number = 10,
-                               repeats = 3,
-                               classProbs = FALSE,
-                               summaryFunction = twoClassSummary,
-                               savePredictions = TRUE)
+                               repeats = 3)
+                               #classProbs = FALSE,
+                               #summaryFunction = twoClassSummary,
+                               #savePredictions = TRUE)
  
  #Modelo 1
  
  set.seed(1)
- modelo_rf <- train(estado_bin ~ N_womersley +  wss_mean + wss_max +  osi + rrt + area_aneurisma_mm2 + 
+ modelo_svm<- train(estado_bin ~ N_womersley +  wss_mean + wss_max +  osi + rrt + area_aneurisma_mm2 + 
                       vol_aneurisma_mm3 + cuello_mm + ancho_mm + alto_mm + ar + nsi + bf + angle +  mh + 
                       vol_geo_mm3 + sup_total_mm2 + strain_von_mises_real + deformation + vol_aneurisma + 
                       strain_von_mises, data = training,
-                    method = "ranger",
-                    num_trees = 300,
+                    method = "svmRadial",
+                    #num_trees = 300,
                     trControl = control_train)
- summary(modelo_rf)
- predicciones <- predict(modelo_rf, testing)
- error <- sqrt((sum((predicciones-testing$estado-bin)^2))/nrow(testing))
+ summary(modelo_svm)
+ predicciones <- predict(modelo_svm, testing)
+ error <- sqrt((sum((predicciones-testing$estado_bin)^2))/nrow(testing))
  plot(testing$estado_bin, predicciones)
  abline(0,1)
  mean(aneurisma$estado_bin)
- cor(testing$price, predicciones)
+ cor(testing$estado_bin, predicciones)
+ 
