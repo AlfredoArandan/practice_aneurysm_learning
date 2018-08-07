@@ -36,33 +36,52 @@ intrain <- createDataPartition(y = casas$price, p= 0.6, list = FALSE)
 training <- casas[intrain,]
 testing <- casas[-intrain,]
 
-#trctrl <- trainControl(method = "repeatedcv", number = 10,
-                     #  repeats = 3,
-                      # classProbs = TRUE,
-                       #summaryFunction = twoClassSummary,
-                       #savePredictions = TRUE)
+control_train <- trainControl(method = "repeatedcv", number = 10,
+                      repeats = 3,
+                      classProbs = FALSE,
+                      summaryFunction = twoClassSummary,
+                      savePredictions = TRUE)
 
 
 #Modelo 1
 
 set.seed(1)
-modelo1 <- lm(price ~ bedrooms + bathrooms + sqft_living + sqft_lot + waterfront + view + condition + grade + 
-                sqft_above + yr_built + sqft_living15 + sqft_lot15, data=training)
-summary(modelo1)
+#modelo1 <- lm(price ~ bedrooms + bathrooms + sqft_living + sqft_lot + waterfront + view + condition + grade + 
+                #sqft_above + yr_built + sqft_living15 + sqft_lot15, data=training)
+modelo_lm <- train(price ~ ., data = training,
+                          method = "lm",
+                          metric = "RMSE",
+                          trControl = control_train)
+summary(modelo_lm)
 
-predicciones <- predict(modelo1, testing)
+predicciones <- predict(modelo_lm, testing)
 
+error <- sqrt((sum((predicciones-testing$price)^2))/nrow(testing))
+
+plot(testing$price, predicciones)
+abline(0,1)
+mean(casas$Price)
+cor(testing$price, predicciones)
 #Error de predicción del modelo. Al tratarse de una variable continua se emplea como medida 
 #de error el MSE (mean square error).
-mean((casas$price[-intrain] - predicciones)^2)
+#mean((casas$price[-intrain] - predicciones)^2)
 
 #Modelo 2 
 
 set.seed(1)
-modelo2 <- glm(price ~ bedrooms + bathrooms + sqft_living + sqft_lot + waterfront + view + condition + grade + 
-                 sqft_above + yr_built + sqft_living15 + sqft_lot15, data=training)
-summary(modelo2)
+modelo_glm <- train(price ~ ., data = training,
+                  method = "glm",
+                  metric = "RMSE",
+                  trcontrol = control_train,
+                  family = gaussian)
 
-predicciones2 <- predict(modelo2, testing)
+summary(modelo_glm)
 
-mean((casas$price[-intrain] - predicciones2)^2)
+predicciones_glm <- predict(modelo_glm, testing)
+
+error <- sqrt((sum((predicciones_glm-testing$price)^2))/nrow(testing))
+
+plot(testing$price, predicciones_glm)
+abline(0,1)
+mean(casas$Price)
+cor(testing$price, predicciones_glm)
