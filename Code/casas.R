@@ -56,7 +56,8 @@ control_train <- trainControl(method = "repeatedcv", number = 10,
 #sqft_above + yr_built + sqft_living15 + sqft_lot15, data=training)
 
 set.seed(1)
-modelo_lm <- train(price ~ ., data = training,
+modelo_lm <- train(price ~ bedrooms + bathrooms + sqft_living + sqft_lot + waterfront + view + condition + grade + 
+                     sqft_above + yr_built + sqft_living15 + sqft_lot15, data = training,
                           method = "lm",
                           metric = "RMSE",
                           trControl = control_train)
@@ -76,7 +77,8 @@ cor(testing$price, predicciones)
 #Modelo 2 
 
 set.seed(1)
-modelo_glm <- train(price ~ ., data = training,
+modelo_glm <- train(price ~ bedrooms + bathrooms + sqft_living + sqft_lot + waterfront + view + condition + grade + 
+                      sqft_above + yr_built + sqft_living15 + sqft_lot15, data = training,
                   method = "glm",
                   metric = "RMSE",
                   trcontrol = control_train,
